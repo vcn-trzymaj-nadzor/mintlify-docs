@@ -1,216 +1,201 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "VTools API",
+    "version": "1.0.0",
+    "description": "Dokumentacja API"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
+      "url": "http://localhost:8000",
+      "description": "Lokalny serwer deweloperski"
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+    "/api/proposals/add": {
+      "post": {
+        "tags": ["Proposals"],
+        "summary": "Dodaj zgłoszenie",
+        "description": "Tworzy nowe zgłoszenie w systemie. Wymagane jest podanie treści zgłoszenia oraz danych kontaktowych zgłaszającego (email lub imię i nazwisko).",
+        "security": [
+          { "ApiKeyAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProposalFormUrlEncoded"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProposalMultipart"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Zgłoszenie utworzone poprawnie",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/AddProposalResponse"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "error": false,
+                      "message": "Zapisano",
+                      "data": {
+                        "id": 123,
+                        "number": "PR-2025/000123",
+                        "url": "/orders/proposals/show/123"
+                      }
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Unexpected error",
+            "description": "Błąd walidacji danych wejściowych",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "missing_content": {
+                    "value": {
+                      "error": true,
+                      "message": "Treść zgłoszenia (content/description) jest wymagana"
+                    }
+                  },
+                  "contact_required": {
+                    "value": {
+                      "error": true,
+                      "message": "Podaj email albo imię i nazwisko zgłaszającego"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Błędny lub brakujący token API",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "no_token": {
+                    "value": { "error": true, "message": "Brak tokena w nagłówku" }
+                  },
+                  "user_not_found": {
+                    "value": { "error": true, "message": "Nie znaleziono użytkownika dla podanego tokena" }
+                  }
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
           }
         }
       }
     }
   },
   "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "token",
+        "description": "Publiczny klucz API"
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "schemas": {
+      "AddProposalBase": {
+        "type": "object",
+        "description": "Wymagany jest email lub para imię i nazwisko. W przypadku braku informacji o metodzie zgłoszenia, system ustawi domyślną metodę.",
+        "required": ["content"],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Treść zgłoszenia (alias description)",
+            "example": "Nie działa internet w mieszkaniu."
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Imię zgłaszającego (opcjonalne jeśli jest email)",
+            "example": "Jan"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Nazwisko zgłaszającego (opcjonalne jeśli jest email)",
+            "example": "Kowalski"
+          },
+          "email": {
+            "type": ["string", "null"],
+            "format": "email",
+            "description": "E-mail zgłaszającego (opcjonalny jeśli jest imię+nazwisko)",
+            "example": "jan.kowalski@example.com"
+          }
+        }
+      },
+      "AddProposalFormUrlEncoded": {
+        "allOf": [
+          { "$ref": "#/components/schemas/AddProposalBase" }
+        ],
+        "description": "Dane w formacie application/x-www-form-urlencoded",
+        "example": {
+          "content": "Nie działa internet od rana",
+          "firstName": "Jan",
+          "lastName": "Kowalski",
+          "email": "jk@vcn.pl"
+        }
+      },
+      "AddProposalMultipart": {
+        "allOf": [
+          { "$ref": "#/components/schemas/AddProposalBase" }
+        ],
+        "type": "object",
+        "description": "Dane w formacie multipart/form-data z możliwością dodania plików",
+        "properties": {
+          "files": {
+            "type": "array",
+            "description": "Lista plików do dołączenia",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Pojedynczy plik (alternatywa dla `files[]`)"
+          }
+        }
+      },
+      "AddProposalResponse": {
+        "type": "object",
+        "required": ["error", "message", "data"],
+        "properties": {
+          "error": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Zapisano" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "example": 123 },
+              "number": { "type": "string", "description": "Pełny numer zgłoszenia", "example": "PR-2025/000123" },
+              "url": { "type": "string", "description": "Ścieżka do podglądu zgłoszenia", "example": "/orders/proposals/show/123" }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Nie znaleziono użytkownika dla podanego tokena" }
+        }
       }
     }
   }
