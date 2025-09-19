@@ -16,13 +16,89 @@
           {
             "group": "Dokumentacja API",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/vtools"
             ]
           },
           {
             "group": "Endpoint",
             "pages": [
-              "api-reference/endpoint/proposalsAdd"
+              "api-reference/endpoint/VTools/proposalsAdd"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API VnetLPR",
+        "groups": [
+          {
+            "group": "Dokumentacja API",
+            "pages": [
+              "api-reference/vnetlpr"
+            ]
+          },
+          {
+            "group": "Zdarzenia ",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/eventsAddImage",
+              "api-reference/endpoint/VnetLPR/eventsAddVezha",
+              "api-reference/endpoint/VnetLPR/eventsBackRegistrationAdd",
+              "api-reference/endpoint/VnetLPR/eventsCreateWalking",
+              "api-reference/endpoint/VnetLPR/eventsSearch",
+              "api-reference/endpoint/VnetLPR/eventsShow"
+            ]
+          },
+          {
+            "group": "Parkingi",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/parkingDepartures",
+              "api-reference/endpoint/VnetLPR/parkingEntryOpenBarrier",
+              "api-reference/endpoint/VnetLPR/parkingLeaveOpenBarrier",
+              "api-reference/endpoint/VnetLPR/parkingSearch",
+              "api-reference/endpoint/VnetLPR/parkingShow",
+              "api-reference/endpoint/VnetLPR/barrierUnlockOut"
+            ]
+          },
+          {
+            "group": "Przepustki",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/addPasse",
+              "api-reference/endpoint/VnetLPR/passesAddConst",
+              "api-reference/endpoint/VnetLPR/passesDelete",
+              "api-reference/endpoint/VnetLPR/passesDeleteItem",
+              "api-reference/endpoint/VnetLPR/passesGuest",
+              "api-reference/endpoint/VnetLPR/passesSearch"
+            ]
+          },
+          {
+            "group": "Zezwolenia",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/permitsAddFromEvent",
+              "api-reference/endpoint/VnetLPR/permitsClose",
+              "api-reference/endpoint/VnetLPR/permitsCloseScanner",
+              "api-reference/endpoint/VnetLPR/permitsSearch",
+              "api-reference/endpoint/VnetLPR/permitsSearchActivePersons",
+              "api-reference/endpoint/VnetLPR/permitsShow",
+              "api-reference/endpoint/VnetLPR/permitsToggle"
+            ]
+          },
+          {
+            "group": "Firmy",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/companiesSearch",
+              "api-reference/endpoint/VnetLPR/companiesShow",
+              "api-reference/endpoint/VnetLPR/companiesShowByName"
+            ]
+          },
+          {
+            "group": "Osoby",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/personsSearch"
+            ]
+          },
+          {
+            "group": "Inne",
+            "pages": [
+              "api-reference/endpoint/VnetLPR/grandstreamAdd"
             ]
           }
         ]

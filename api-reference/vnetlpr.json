@@ -1,0 +1,4821 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "VnetLPR",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://lpr-demo.vcn.pl"
+    }
+  ],
+  "paths": {
+    "/api/avilda/addPasse": {
+      "post": {
+        "description": "Pozwala dodawać awizacje w specyficznym formacie",
+        "summary": "Dodawanie awizacji dla Avilda",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5 ( autono + public_key + private_key )"
+                  },
+                  "orderid": {
+                    "type": "string",
+                    "description": "Numer transportu"
+                  },
+                  "autono": {
+                    "type": "string",
+                    "description": "Numer rejestracji"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "autono"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rezultat dodawania awizacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identyfikator awizacji",
+                          "type": "integer"
+                        },
+                        "item_id": {
+                          "description": "Identyfikator pozycji awizacji",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/avilda/barrier/unlock/out": {
+      "post": {
+        "description": "Dodaje pozwolenie na wyjazd dla danego pojazdu na podstawie numeru rejestracyjnego",
+        "summary": "Dodawanie pozwolenia na wyjazd",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5 ( autono + public_key + private_key )"
+                  },
+                  "autono": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny pojazdu"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Odpowiedź systemu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/configuration/group/{groupName}": {
+      "get": {
+        "summary": "Zmienne konfiguracyjne dla grupy",
+        "tags": [
+          "Konfiguracja"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły parkingu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Zwraca listę elementów \"klucz\", \"wartość\"",
+                      "example": "key = value"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "groupName",
+          "in": "path",
+          "required": true,
+          "description": "Nazwa grupy konfiguracji",
+          "example": "parking"
+        }
+      ]
+    },
+    "/api/companies/show/{id}": {
+      "get": {
+        "summary": "Szczegóły najemcy na podstawie identyfikatora",
+        "tags": [
+          "Najemcy"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły najemcy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator najemcy"
+        }
+      ]
+    },
+    "/api/companies/showByName/{name}": {
+      "get": {
+        "summary": "Szczegóły najemcy na podstawie nazwy",
+        "tags": [
+          "Najemcy"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły najemcy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "name",
+          "in": "path",
+          "required": true,
+          "description": "Nazwa najemcy"
+        }
+      ]
+    },
+    "/api/companies/search": {
+      "post": {
+        "description": "Pozwala wyszukiwać najemców",
+        "summary": "Wyszukiwanie najemców",
+        "tags": [
+          "Najemcy"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Nazwa najemcy"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych osób",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/add/vezha/source/{source}/camera/{camera}": {
+      "post": {
+        "summary": "Dodaje zdarzenie z kamer Vezha",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator źródła",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "camera",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator kamery",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny"
+                  },
+                  "timestamp": {
+                    "type": "integer",
+                    "description": "Znacznik czasu"
+                  },
+                  "frame": {
+                    "type": "string",
+                    "description": "Ścieżka do dużego zdjęcia"
+                  },
+                  "image": {
+                    "type": "string",
+                    "description": "Ścieżka do miniatury"
+                  },
+                  "image_base64": {
+                    "type": "string",
+                    "description": "Zdjęcie zakodowane w Base64"
+                  },
+                  "frame_base64": {
+                    "type": "string",
+                    "description": "Miniatura zakodowana w Base64"
+                  },
+                  "confidence": {
+                    "type": "integer",
+                    "description": "Poziom pewności"
+                  }
+                },
+                "required": [
+                  "number",
+                  "timestamp"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Szczegóły zdarzenia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "event_id": {
+                          "type": "string",
+                          "description": "Identyfikator zdarzenia"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/addImage": {
+      "post": {
+        "description": "Dodaje zdjęcie do zdarzenia, w przypadku gdy zdarzenie nie posiada jeszcze zdjęcia głównego lub miniaturki to pierwsze dodane zdjęcie zostanie ustawione jako główne",
+        "summary": "Dodawanie zdjęć do zdarzenia",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( event_id + public_key + private_key )"
+                  },
+                  "event_id": {
+                    "description": "Identyfikator zdarzenia",
+                    "type": "string"
+                  },
+                  "image": {
+                    "description": "Zdjęcie",
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "type": {
+                    "description": "Rodzaj zdjęcia",
+                    "type": "string",
+                    "enum": [
+                      "image",
+                      "back_registration_number",
+                      "seal_number"
+                    ]
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "event_id",
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rezultat operacji dodawania zdjęcia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/backRegistration/add": {
+      "post": {
+        "description": "Dodaje tylną rejestrację na podstawie przesłanego numeru lub zdjęcia",
+        "summary": "Dodawanie tylnej rejestracji",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( master_id + public_key + private_key )"
+                  },
+                  "master_id": {
+                    "description": "Identyfikator zdarzenia do którego należy dodać tylną tablicę",
+                    "type": "string"
+                  },
+                  "image": {
+                    "description": "Zdjęcie tylnej tablicy",
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "ocr": {
+                    "description": "Flaga mówiąca czy system ma rozpocznać numer tablicy na podstawie zdjęcia",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "plate": {
+                    "description": "Numer tablicy rejestracyjnej ( wymagane, gdy flaga ocr jest ustawiona na false )",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "master_id",
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rezultat operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/create/walking": {
+      "post": {
+        "summary": "Dodaje zdarzenie wejścia pieszego",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( public_key + private_key )"
+                  },
+                  "passe_id": {
+                    "type": "integer",
+                    "description": "Identyfikator wejścia"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Opis zdarzenia wyżwietlany na liście zdarzeń"
+                  },
+                  "persons": {
+                    "$ref": "#/components/schemas/EventWalkingPersonList"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "passe_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Szczegóły zdarzenia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/search": {
+      "post": {
+        "description": "Zwraca listę zdarzeń zawężoną o podane kryteria wyszukiwania.",
+        "summary": "Wyszukiwanie zdarzeń",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( public_key + private_key )"
+                  },
+                  "registration_number": {
+                    "description": "Numer rejestracyjny",
+                    "type": "string"
+                  },
+                  "item_id": {
+                    "description": "Identyfikator pozycji awizacji",
+                    "type": "integer"
+                  },
+                  "guest_name": {
+                    "description": "Imię, nawisko gościa",
+                    "type": "string"
+                  },
+                  "guest_phone": {
+                    "description": "Numer telefonu gościa",
+                    "type": "string"
+                  },
+                  "date_start": {
+                    "type": "string",
+                    "description": "Data początkowa",
+                    "format": "date-time",
+                    "example": "2022-01-01 00:00:00"
+                  },
+                  "date_end": {
+                    "type": "string",
+                    "description": "Data końcowa",
+                    "format": "date-time",
+                    "example": "2022-01-01 12:30:00"
+                  },
+                  "direction": {
+                    "type": "string",
+                    "description": "Kierunek",
+                    "enum": [
+                      "in",
+                      "out",
+                      "undetermined"
+                    ]
+                  },
+                  "camera": {
+                    "type": "integer",
+                    "description": "Identyfikator kamery"
+                  },
+                  "status": {
+                    "type": "array",
+                    "description": "Lista statusów",
+                    "enum": [
+                      "new",
+                      "duplicate",
+                      "close",
+                      "permament",
+                      "too_early",
+                      "ontime",
+                      "too_late",
+                      "not_found",
+                      "stop",
+                      "arrives",
+                      "entered",
+                      "drove_off",
+                      "leaving",
+                      "he_left",
+                      "blacklist",
+                      "car_back",
+                      "rejected",
+                      "connected",
+                      "wrong_number"
+                    ]
+                  },
+                  "limit": {
+                    "description": "Maksymalna ilość rekordów",
+                    "type": "integer",
+                    "default": 100
+                  },
+                  "page": {
+                    "description": "Strona",
+                    "type": "integer",
+                    "default": 1
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              },
+              "examples": {
+                "Lista 100 ostatnich zdarzeń": {
+                  "value": {
+                    "public_key": "20ea8c6a-5661-43e9-9759-12cf74cf8756",
+                    "hash": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych zdarzeń",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/EventList"
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "error": false,
+                      "message": "",
+                      "data": [
+                        {
+                          "id": "string",
+                          "registration_number": "PO239842",
+                          "status": "new",
+                          "time_of": "2022-01-01 12:45:00",
+                          "passe_item": null,
+                          "permit": {
+                            "id": 105,
+                            "full_number": "187/10/2022",
+                            "active": true,
+                            "create_at": "2022-01-01 12:45:00"
+                          },
+                          "checkpoints": [],
+                          "comment": "",
+                          "comeback": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/show": {
+      "get": {
+        "summary": "Szczegóły zdarzenia",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego, identyfikatora zdarzenia oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(event_id + public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "event_id",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator zdarzenia",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły zdarzenia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Event"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grandstream/add": {
+      "post": {
+        "summary": "Dodawanie zdarzeń z domofonu Granmdstream",
+        "operationId": "post-api-grandstream-add",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "responses": {
+          "200": {
+            "description": "Informacja czy operacja się powiodła",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "eventId": {
+                          "description": "Identyfikator zdarzenia",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  },
+                  "date": {
+                    "type": "string",
+                    "description": "Data zdarzenia"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Rodzaj operacji. Dostępne parametry to:\n100 - otwarcie kartą, zarejestrowaną w systemie Grandstream,\n102 - otwarcie kartą, której nie ma w systemie Grandstream,\n200 - \n301 - otwarcie PIN-em prywatnym,\n500 - \n504 -",
+                    "enum": [
+                      "100",
+                      "102",
+                      "200",
+                      "301",
+                      "500",
+                      "504"
+                    ],
+                    "example": "100"
+                  },
+                  "card": {
+                    "type": "string",
+                    "description": "Numer karty"
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "Identyfikator użytkownika"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "Identyfikator urządzenia"
+                  },
+                  "direction": {
+                    "type": "string",
+                    "description": "Kierunek ruchu"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parking/departures": {
+      "post": {
+        "description": "Lista wyjazdów z parkingów",
+        "summary": "Lista wyjazdów",
+        "tags": [
+          "Parkingi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "default": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista wyjazdów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DeparturesList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parking/search": {
+      "post": {
+        "description": "Lista dostępnych parkingów",
+        "summary": "Lista parkingów",
+        "tags": [
+          "Parkingi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "default": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista parkingów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ParkingList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parking/entry/openBarrier": {
+      "get": {
+        "summary": "Otwiera wjazd",
+        "tags": [
+          "Parkingi"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator wjazdu",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wynik operacji otwarcia wjazdu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parking/leave/openBarrier": {
+      "get": {
+        "summary": "Otwiera wyjazd",
+        "tags": [
+          "Parkingi"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator wyjazdu",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wynik operacji otwarcia wyjazdu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parking/show/{id}": {
+      "get": {
+        "summary": "Szczegóły parkingu na podstawie identyfikatora",
+        "tags": [
+          "Parkingi"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły parkingu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ParkingDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator parkingu"
+        }
+      ]
+    },
+    "/api/passes/add/const": {
+      "post": {
+        "summary": "Dodaje awizację stałą",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "example": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( registration_number + public_key + private_key )"
+                  },
+                  "registration_number": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny"
+                  },
+                  "parking": {
+                    "type": "array",
+                    "description": "Identyfikatory parkingów"
+                  },
+                  "company": {
+                    "type": "integer",
+                    "description": "Identyfikator najemcy"
+                  },
+                  "vehicle_brand": {
+                    "type": "string",
+                    "description": "Marka pojazdu"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Uwagi"
+                  },
+                  "block_barrier_in": {
+                    "type": "boolean",
+                    "description": "Blokada otwarcia szlabanu na wjeździe",
+                    "default": false,
+                    "example": false
+                  },
+                  "block_barrier_out": {
+                    "type": "boolean",
+                    "description": "Blokada otwarcia szlabanu na wyjeździe",
+                    "default": false,
+                    "example": false
+                  },
+                  "notification_in_enabled": {
+                    "type": "boolean",
+                    "description": "Powiadomienie dla ochrony na wjeździe",
+                    "default": false,
+                    "example": false
+                  },
+                  "notification_in_message": {
+                    "type": "string",
+                    "description": "Treść powiadomienia dla ochrony na wjeździe"
+                  },
+                  "notification_out_enabled": {
+                    "type": "boolean",
+                    "description": "Powiadomienie dla ochrony na wyjeździe",
+                    "default": false,
+                    "example": false
+                  },
+                  "notification_out_message": {
+                    "type": "string",
+                    "description": "Treść powiadomienia dla ochrony na wyjeździe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rezultat dodawania awizacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identyfikator awizacji",
+                          "type": "integer"
+                        },
+                        "item_id": {
+                          "description": "Identyfikator pozycji awizacji",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passes/delete": {
+      "post": {
+        "summary": "Usuwanie awizacji",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( id + public_key + private_key )"
+                  },
+                  "id": {
+                    "description": "Identyfikator awizacji",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wynik operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passes/deleteItem": {
+      "post": {
+        "summary": "Usuwanie pozycji awizacji",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( id + public_key + private_key )"
+                  },
+                  "id": {
+                    "description": "Identyfikator awizacji",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wynik operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passes/guest": {
+      "post": {
+        "summary": "Dodaje awizację gościa",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "example": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  },
+                  "item_id": {
+                    "type": "integer",
+                    "description": "Identyfikator pozycji awizacji do aktualizacji"
+                  },
+                  "date_start": {
+                    "type": "string",
+                    "description": "Data rozpoczęcia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "date_end": {
+                    "type": "string",
+                    "description": "Data zakończenia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "persons_quantity": {
+                    "type": "integer",
+                    "description": "Ilość osób",
+                    "example": 1
+                  },
+                  "person_full_name": {
+                    "type": "string",
+                    "description": "Imię i nazwisko gościa",
+                    "example": "Jan Kowalski"
+                  },
+                  "person_email": {
+                    "type": "string",
+                    "description": "Adres e-mail gościa",
+                    "example": "jan@kowalski.pl"
+                  },
+                  "person_phone": {
+                    "type": "string",
+                    "description": "Numer telefonu gościa",
+                    "example": "607293856"
+                  },
+                  "person_pesel": {
+                    "type": "string",
+                    "description": "Numer PESEL gościa",
+                    "example": "98052162175"
+                  },
+                  "person_marketing": {
+                    "type": "boolean",
+                    "description": "Zgoda na przesyłanie informacji marketingowych",
+                    "example": false
+                  },
+                  "paid_amount": {
+                    "type": "string",
+                    "description": "Kwota płatności",
+                    "example": "100.00"
+                  },
+                  "registration_number": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny",
+                    "example": "PO127348"
+                  },
+                  "confirm": {
+                    "type": "boolean",
+                    "description": "Potwierdzenie awizacji",
+                    "example": true
+                  },
+                  "qr_code": {
+                    "type": "string",
+                    "description": "Kod QR"
+                  },
+                  "products": {
+                    "description": "Lista produktów",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PasseProductAdd"
+                    }
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "person_full_name",
+                  "date_start",
+                  "date_end"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych zdarzeń",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "item_id": {
+                          "description": "Identyfikator pozycji awizacji",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Aktualizuje awizację gościa",
+        "tags": [
+          "Awizacje"
+        ],
+        "operationId": "put-api-passes-guest",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "example": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  },
+                  "item_id": {
+                    "type": "integer",
+                    "description": "Identyfikator pozycji awizacji do aktualizacji"
+                  },
+                  "date_start": {
+                    "type": "string",
+                    "description": "Data rozpoczęcia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "date_end": {
+                    "type": "string",
+                    "description": "Data zakończenia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "persons_quantity": {
+                    "type": "integer",
+                    "description": "Ilość osób",
+                    "example": 1
+                  },
+                  "person_full_name": {
+                    "type": "string",
+                    "description": "Imię i nazwisko gościa",
+                    "example": "Jan Kowalski"
+                  },
+                  "person_email": {
+                    "type": "string",
+                    "description": "Adres e-mail gościa",
+                    "example": "jan@kowalski.pl"
+                  },
+                  "person_phone": {
+                    "type": "string",
+                    "description": "Numer telefonu gościa",
+                    "example": "607293856"
+                  },
+                  "person_pesel": {
+                    "type": "string",
+                    "description": "Numer PESEL gościa",
+                    "example": "98052162175"
+                  },
+                  "person_marketing": {
+                    "type": "boolean",
+                    "description": "Zgoda na przesyłanie informacji marketingowych",
+                    "example": false
+                  },
+                  "paid_amount": {
+                    "type": "string",
+                    "description": "Kwota płatności",
+                    "example": "100.00"
+                  },
+                  "registration_number": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny",
+                    "example": "PO127348"
+                  },
+                  "confirm": {
+                    "type": "boolean",
+                    "description": "Potwierdzenie awizacji",
+                    "example": true
+                  },
+                  "qr_code": {
+                    "type": "string",
+                    "description": "Kod QR"
+                  },
+                  "products": {
+                    "description": "Lista produktów",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PasseProductAdd"
+                    }
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "item_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wynik aktualizacji awizacji gościa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "item_id": {
+                          "description": "Identyfikator pozycji awizacji",
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passes/search": {
+      "post": {
+        "summary": "Wyszukiwanie awizacji",
+        "tags": [
+          "Awizacje"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "example": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( public_key + private_key )"
+                  },
+                  "registration_number": {
+                    "type": "string",
+                    "description": "Numer rejestracyjny",
+                    "example": "PO127348"
+                  },
+                  "trailer_number": {
+                    "type": "string",
+                    "description": "Numer naczepy",
+                    "example": "PO987654"
+                  },
+                  "item_id": {
+                    "type": "integer",
+                    "description": "Identyfikator pozycji awizacji do aktualizacji"
+                  },
+                  "date_start": {
+                    "type": "string",
+                    "description": "Data rozpoczęcia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "date_end": {
+                    "type": "string",
+                    "description": "Data zakończenia awizacji",
+                    "example": "2022-01-01 08:00:00"
+                  },
+                  "guest_name": {
+                    "type": "string",
+                    "description": "Imię i nazwisko gościa",
+                    "example": "Jan Kowalski"
+                  },
+                  "guest_phone": {
+                    "type": "string",
+                    "description": "Numer telefonu gościa",
+                    "example": "+48 603 456 945"
+                  },
+                  "transport_number": {
+                    "type": "string",
+                    "description": "Numer transportu"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Typ awizacji",
+                    "enum": [
+                      "const",
+                      "weeks_day",
+                      "days",
+                      "range_days"
+                    ]
+                  },
+                  "type_transport": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "description": "Rodzaj awizacji",
+                    "enum": [
+                      "loading",
+                      "unloading",
+                      "guest",
+                      "reservation"
+                    ]
+                  },
+                  "limit": {
+                    "description": "Maksymalna ilość rekordów",
+                    "type": "integer"
+                  },
+                  "page": {
+                    "description": "Strona",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych awizacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PasseList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/addFromEvent": {
+      "post": {
+        "description": "Wystawia przepustkę na podstawie identyfikatora zdarzenia",
+        "summary": "Wystawianie przepustki na  podstawie zdarzenia",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie identyfikatora zdarzenia klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "default": "09d1fd79a6f54b05e66cc7ba92ec3f77",
+                    "example": "MD5( event_id + public_key + private_key )"
+                  },
+                  "event_id": {
+                    "type": "string",
+                    "description": "Identyfikator zdarzenia"
+                  },
+                  "passe_item_id": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Identyfikator pozycji awizacji"
+                  },
+                  "company_id": {
+                    "type": "integer",
+                    "description": "Identyfikator najemcy"
+                  },
+                  "contractor_id": {
+                    "type": "integer",
+                    "description": "Identyfikator kontrahenta"
+                  },
+                  "contractor_name": {
+                    "type": "string",
+                    "description": "Nazwa kontrahenta"
+                  },
+                  "purpose_visit_id": {
+                    "type": "integer",
+                    "description": "Identyfikator celu wizyty"
+                  },
+                  "seal_number": {
+                    "type": "string",
+                    "description": "Numer plomby"
+                  },
+                  "document_external_number": {
+                    "type": "string",
+                    "description": "Numer dokumentu"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Komentarz"
+                  },
+                  "print_label": {
+                    "type": "boolean",
+                    "description": "Czy wydrukować etykietę",
+                    "example": false
+                  },
+                  "persons": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PermitPerson"
+                    }
+                  },
+                  "products": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PermitProduct"
+                    }
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "event_id",
+                  "company_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacja o wykonaniu operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identyfikator przepustki",
+                          "type": "int"
+                        },
+                        "full_number": {
+                          "description": "Numer przepustki",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/close": {
+      "post": {
+        "description": "Zamyka przepustkę",
+        "summary": "Zamyka przepustkę",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( full_number + public_key + private_key )"
+                  },
+                  "event_id": {
+                    "type": "string",
+                    "description": "Identyfikator zdarzenia"
+                  },
+                  "full_number": {
+                    "type": "string",
+                    "description": "Numer przepustki"
+                  },
+                  "company_id": {
+                    "type": "integer",
+                    "description": "Identyfikator najemcy"
+                  },
+                  "contractor_id": {
+                    "type": "integer",
+                    "description": "Identyfikator kontrahenta"
+                  },
+                  "purpose_visit_id": {
+                    "type": "integer",
+                    "description": "Identyfikator celu wizyty"
+                  },
+                  "seal_number": {
+                    "type": "string",
+                    "description": "Numer plomby"
+                  },
+                  "document_external_number": {
+                    "type": "string",
+                    "description": "Numer dokumentu"
+                  },
+                  "persons": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PermitPerson"
+                    }
+                  },
+                  "products": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PermitProduct"
+                    }
+                  },
+                  "permits_to_close": {
+                    "description": "Lista numerów przepustek do zamknięcia",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "event_id",
+                  "full_number"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacja o wykonaniu operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identyfikator przepustki",
+                          "type": "int"
+                        },
+                        "full_number": {
+                          "description": "Numer przepustki",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/closeScanner": {
+      "post": {
+        "description": "Zamyka przepustkę wykorzystując skaner",
+        "summary": "Zamyka przepustkę wykorzystując skaner",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( time_of + identifier + full_number + public_key + private_key )"
+                  },
+                  "time_of": {
+                    "type": "string",
+                    "description": "Czas odczytu ze skanera"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "description": "Identyfikator skanera"
+                  },
+                  "full_number": {
+                    "type": "string",
+                    "description": "Numer przepustki"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "time_of",
+                  "identifier",
+                  "full_number"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacja o wykonaniu operacji",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Identyfikator przepustki",
+                          "type": "int"
+                        },
+                        "full_number": {
+                          "description": "Numer przepustki",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/search": {
+      "post": {
+        "description": "Wyszukiwanie przepustek na podstawie parametrów",
+        "summary": "Wyszukiwanie przepustek",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "default": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  },
+                  "active": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Aktywność przepustki",
+                    "default": null
+                  },
+                  "id": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Identyfikator przepustki",
+                    "default": null
+                  },
+                  "full_number": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Numer przepustki",
+                    "default": null
+                  },
+                  "person_full_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Imię i nazwisko osoby",
+                    "default": null
+                  },
+                  "person_id_number": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Identyfikator dokumentu",
+                    "default": null
+                  },
+                  "person_has_permit": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Czy osoba posiada przepustkę",
+                    "default": null
+                  },
+                  "person_permit_active": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Czy osoba posiada aktywną przepustkę",
+                    "default": null
+                  },
+                  "limit": {
+                    "description": "Maksymalna ilość rekordów",
+                    "type": "integer"
+                  },
+                  "page": {
+                    "description": "Strona",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalezionych przepustek",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PermitList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/searchActivePersons": {
+      "post": {
+        "description": "Wyszukuje listę osób na podstawie numeru przepustki i zwraca informacje o aktywnej przepustce",
+        "summary": "Wyszukuje listę osób na podstawie numeru przepustki",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny",
+                    "default": "20ea8c6a-5661-43e9-9759-12cf74cf8756"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "default": "09d1fd79a6f54b05e66cc7ba92ec3f77"
+                  },
+                  "full_number": {
+                    "type": "string",
+                    "description": "Numer przepustki"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "full_number"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalezionych osób",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PermitActivePersonList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/show": {
+      "get": {
+        "summary": "Szczegóły przepustki",
+        "tags": [
+          "Przepustki"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie numeru przepustki, klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(full_number + public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "full_number",
+            "in": "query",
+            "required": true,
+            "description": "Numer przepustki",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły przepustki",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PermitDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permits/toggle": {
+      "post": {
+        "description": "Wystawia lub zamyka przepustkę w zależności czy przepustka jest aktywna. W przypadku braku aktywnej przepustki otwiera nową, o ile istnieje aktywna awizacja.",
+        "summary": "Wystawia lub zamyka przepustkę",
+        "tags": [
+          "Przepustki"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5(full_number + public_key + private_key)"
+                  },
+                  "full_number": {
+                    "type": "string",
+                    "description": "Numer przepustki"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Identyfikator źródła"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "full_number",
+                  "source"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Zwraca informację czy operacja została wykonana poprawnie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/persons/search": {
+      "post": {
+        "description": "Pozwala wyszukiwać osoby na podstawie numeru karty lub wylistować wszytskie osoby znajdujące się w systemie.",
+        "summary": "Wyszukiwanie osób",
+        "tags": [
+          "Osoby"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  },
+                  "card_number": {
+                    "type": "string",
+                    "description": "Numer karty"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych osób",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/purposeVisits/search": {
+      "post": {
+        "description": "Pozwala wyszukiwać cele wizyty",
+        "summary": "Wyszukiwanie celów wizyty",
+        "tags": [
+          "Najemcy"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych celów wizyty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurposeVisitList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/purposeVisits/show/{id}": {
+      "get": {
+        "description": "Szczegóły celu wizyty na podstawie identyfikatora",
+        "summary": "Szczegóły celu wizyty na podstawie identyfikatora",
+        "tags": [
+          "Najemcy"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły celu wizyty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PurposeVisitDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator celu wizyty"
+        }
+      ]
+    },
+    "/api/purposeVisits/showByName/{name}": {
+      "get": {
+        "description": "Szczegóły celu wizyty na podstawie nazwy",
+        "summary": "Szczegóły celu wizyty na podstawie nazwy",
+        "tags": [
+          "Najemcy"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły celu wizyty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PurposeVisitDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "name",
+          "in": "path",
+          "required": true,
+          "description": "Opis celu wizyty"
+        }
+      ]
+    },
+    "/api/scales/weight": {
+      "post": {
+        "description": "Pozwala na przesłanie odczytu z wagi",
+        "summary": "Dodaje odczyt z wagi",
+        "tags": [
+          "Najemcy"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  },
+                  "scale_id": {
+                    "type": "integer",
+                    "description": "Identyfikator wagi"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "scale_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista znalzeionych osób",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sources/data": {
+      "post": {
+        "description": "Dodaje odczyt z danego źródła danych",
+        "summary": "Dodawanie odczytu ze źródła danych",
+        "tags": [
+          "Źródła"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+                    "example": "MD5( source + public_key + private_key )"
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "Identyfikator źródła"
+                  },
+                  "data": {
+                    "type": "string",
+                    "description": "Odczyt"
+                  },
+                  "permit": {
+                    "type": "boolean",
+                    "description": "Flaga informującą, że odczyt jest przepustką i należy zamknąć przepustkę osoby lub utworzyć nową",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash",
+                  "source",
+                  "data"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Powodzenie operacji dodawania odczytu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settlements/search": {
+      "get": {
+        "summary": "Wyszukiwanie rozliczeń",
+        "tags": [
+          "Rozliczenia"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "full_number",
+            "in": "query",
+            "description": "Numer przepustki",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "registration_number",
+            "in": "query",
+            "description": "Numer rejestracyjny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "description": "Aktywność przepustki",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "paid",
+            "in": "query",
+            "description": "Przepustki płatne",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "settle",
+            "in": "query",
+            "description": "Rozliczone przepustki",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "date_start",
+            "in": "query",
+            "description": "Data początkowa",
+            "schema": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          },
+          {
+            "name": "date_end",
+            "in": "query",
+            "description": "Data końcowa",
+            "schema": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły celu wizyty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settlements/settle/permit/{permitId}": {
+      "put": {
+        "summary": "Rozliczenie przepustki",
+        "tags": [
+          "Rozliczenia"
+        ],
+        "parameters": [
+          {
+            "name": "permitId",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator przepustki",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_key": {
+                    "type": "string",
+                    "description": "Klucz publiczny"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5"
+                  },
+                  "amount": {
+                    "type": "integer",
+                    "description": "Kwota w groszach"
+                  },
+                  "free": {
+                    "type": "boolean",
+                    "description": "Awizacja bezpłatna"
+                  },
+                  "company_id": {
+                    "type": [
+                      "null",
+                      "integer"
+                    ],
+                    "description": "Identyfikator najemcy"
+                  }
+                },
+                "required": [
+                  "public_key",
+                  "hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Powodzenie operacji dodawania odczytu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sources/show": {
+      "get": {
+        "description": "Dodaje odczyt z danego źródła danych",
+        "summary": "Dodawanie odczytu ze źródła danych",
+        "tags": [
+          "Źródła"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego, identyfikatora zdarzenia oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": true,
+            "description": "Identyfikator źródła",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Powodzenie operacji dodawania odczytu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Source"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "description": "Zwraca podstawowe informacje o systemie tj. numer wersji, numer licencji, data wygaśnięcia licencji.",
+        "summary": "Status systemu",
+        "tags": [
+          "Status"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zwraca status systemu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "description": "Wersja systemu",
+                      "type": "string"
+                    },
+                    "license_number": {
+                      "description": "Numer licencji",
+                      "type": "string"
+                    },
+                    "expiration_date": {
+                      "description": "Data wygaśnięcia licencji",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/byPin/{pin}": {
+      "get": {
+        "summary": "Zwraca informacje o użytkowniku na podstawie numeru PIN",
+        "tags": [
+          "Użytkownicy"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły parkingu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ParkingDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "pin",
+          "in": "path",
+          "required": true,
+          "description": "Numer PIN"
+        }
+      ]
+    },
+    "/api/verify": {
+      "get": {
+        "summary": "Weryfikacja pojazdu",
+        "tags": [
+          "Zdarzenia"
+        ],
+        "parameters": [
+          {
+            "name": "public_key",
+            "in": "query",
+            "required": true,
+            "description": "Klucz publiczny",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "description": "Hasz wyliczany poprzez połączenie numeru przepustki, klucza publicznego oraz prywatnego zakodowanego za pomocą funkcji MD5",
+            "example": "MD5(public_key + private_key)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plate",
+            "in": "query",
+            "required": true,
+            "description": "Numer rejestracji",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "required": false,
+            "description": "Identyfikator firmy",
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły przepustki",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "description": "Czy wystąpił błąd",
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "description": "Treść powiadomienia",
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/EventVerify"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Awizacje",
+      "description": "Awizacje"
+    },
+    {
+      "name": "Osoby",
+      "description": "Osoby"
+    },
+    {
+      "name": "Parkingi",
+      "description": "Parkingi"
+    },
+    {
+      "name": "Przepustki",
+      "description": "Przepustki"
+    },
+    {
+      "name": "Zdarzenia",
+      "description": "Zdarzenia"
+    },
+    {
+      "name": "Źródła",
+      "description": "Źródła"
+    },
+    {
+      "name": "Najemcy",
+      "description": "Najemcy"
+    },
+    {
+      "name": "Użytkownicy",
+      "description": "Użytkownicy"
+    },
+    {
+      "name": "Konfiguracja",
+      "description": "Konfiguracja"
+    },
+    {
+      "name": "Rozliczenia",
+      "description": "Rozliczenia"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "CardList": {
+        "description": "Lista kart",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Card"
+        }
+      },
+      "Card": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator karty",
+            "type": "integer"
+          },
+          "card_number": {
+            "description": "Numer karty",
+            "type": "string"
+          },
+          "active": {
+            "description": "Aktywna",
+            "type": "boolean"
+          }
+        }
+      },
+      "Checkpoint": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator punktu kontrolnego",
+            "type": "integer"
+          }
+        }
+      },
+      "CheckpointList": {
+        "description": "Lista punktów kontrolnych",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Checkpoint"
+        }
+      },
+      "Departure": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator wyjazdu",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Nazwa wyjazdu",
+            "type": "string"
+          }
+        }
+      },
+      "DeparturesList": {
+        "description": "Lista wyjazdów",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Departure"
+        }
+      },
+      "EventList": {
+        "description": "Lista zdarzeń",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Event"
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator zdarzenia",
+            "type": "string"
+          },
+          "registration_number": {
+            "description": "Numer rejestracyjny pojazdu",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status zdarzenia",
+            "type": "string",
+            "enum": [
+              "new",
+              "duplicate",
+              "close",
+              "permament",
+              "too_early",
+              "ontime",
+              "too_late",
+              "not_found",
+              "stop",
+              "arrives",
+              "drove_off",
+              "leaving",
+              "he_left",
+              "blacklist",
+              "car_back",
+              "rejected",
+              "connected",
+              "wrong_number"
+            ]
+          },
+          "time_of": {
+            "type": "string",
+            "description": "Czas zdarzenia",
+            "example": "2022-01-01 12:45:00",
+            "format": "date-time"
+          },
+          "passe_item": {
+            "description": "Identyfikator pozycji awizacji",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "permit": {
+            "$ref": "#/components/schemas/Permit"
+          },
+          "checkpoints": {
+            "$ref": "#/components/schemas/CheckpointList"
+          },
+          "comment": {
+            "description": "Komentarze pod zdarzeniem",
+            "type": "string"
+          },
+          "comeback": {
+            "description": "Czy pojazd jest pojazdem powracającym",
+            "type": "boolean"
+          },
+          "image": {
+            "description": "Adres URL dużego zdjęcia całego pojazdu",
+            "type": "string"
+          },
+          "image_thumbnail": {
+            "description": "Adres URL miniaturki zdjęcia pokazująca tablicę rejestracyjną",
+            "type": "string"
+          },
+          "master_id": {
+            "description": "Identyfikator zdarzenia głównego",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "permits_to_close": {
+            "$ref": "#/components/schemas/PermitToCloseList"
+          },
+          "persons": {
+            "$ref": "#/components/schemas/EventPersonList"
+          },
+          "purpose_visit": {
+            "$ref": "#/components/schemas/PurposeVisit"
+          },
+          "contractor": {
+            "$ref": "#/components/schemas/Contractor"
+          },
+          "company": {
+            "$ref": "#/components/schemas/EvntShowCompany"
+          },
+          "seal_number": {
+            "description": "Numer plomby",
+            "type": "string"
+          },
+          "document_external_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "direction": {
+            "description": "Kierunek",
+            "type": "string",
+            "enum": [
+              "in",
+              "out",
+              "undetermined"
+            ]
+          }
+        }
+      },
+      "EventPersonList": {
+        "description": "Lista osób",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EventPerson"
+        }
+      },
+      "EventPerson": {
+        "descritpion": "Osoba",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator przepustki",
+            "type": "integer"
+          },
+          "full_name": {
+            "description": "Imię i nazwisko",
+            "type": "string"
+          },
+          "company": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "permit": {
+            "$ref": "#/components/schemas/Permit"
+          }
+        }
+      },
+      "Permit": {
+        "descritpion": "Przepustka",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator przepustki",
+            "type": "integer"
+          },
+          "full_number": {
+            "description": "Numer przepustki",
+            "type": "string"
+          },
+          "active": {
+            "description": "Aktywna",
+            "type": "boolean"
+          },
+          "create_at": {
+            "type": "string",
+            "description": "Data utworzenia",
+            "format": "date-time",
+            "example": "2022-01-01 12:45:00"
+          }
+        }
+      },
+      "PermitDetail": {
+        "descritpion": "Przepustka",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator przepustki",
+            "type": "integer"
+          },
+          "fullNumber": {
+            "description": "Numer przepustki",
+            "type": "string"
+          },
+          "comment_entry": {
+            "description": "Komentarz dodany podczas wystawiania przepustki",
+            "type": "string"
+          },
+          "comment_left": {
+            "description": "Komentarz dodany podczas zamykania przepustki",
+            "type": "string"
+          },
+          "active": {
+            "description": "Aktywna",
+            "type": "boolean"
+          },
+          "create_at": {
+            "type": "string",
+            "description": "Data utworzenia",
+            "format": "date-time",
+            "example": "2022-01-01 12:45:00"
+          },
+          "persons": {
+            "$ref": "#/components/schemas/PermitDetailPersonList"
+          },
+          "event_open": {
+            "$ref": "#/components/schemas/PermitDetailEventOpen"
+          }
+        }
+      },
+      "PermitDetailEventOpen": {
+        "description": "Zdarzenie wjazdowe",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator zdarzenia",
+            "type": "string"
+          },
+          "registration_number": {
+            "description": "Numer rejestracyjny",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status",
+            "type": "string"
+          },
+          "comment": {
+            "description": "Komentarz",
+            "type": "string"
+          },
+          "seal_number": {
+            "description": "Numer plomby",
+            "type": "string"
+          },
+          "document_external_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "contractor": {
+            "$ref": "#/components/schemas/Contractor"
+          },
+          "contractor_name": {
+            "description": "Nazwa kontrahenta",
+            "type": "string"
+          },
+          "purpose_visit": {
+            "$ref": "#/components/schemas/PurposeVisit"
+          },
+          "persons": {
+            "$ref": "#/components/schemas/PermitDetailEventOpenPersonList"
+          }
+        }
+      },
+      "PermitDetailPersonList": {
+        "description": "Lista osób",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PermitDetailPerson"
+        }
+      },
+      "PermitDetailEventOpenPersonList": {
+        "description": "Lista osób",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PermitDetailEventOpenPerson"
+        }
+      },
+      "PermitDetailPerson": {
+        "description": "Dane osoby",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "full_name": {
+            "description": "Imię",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "company": {
+            "description": "Firma",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "email": {
+            "description": "E-mail",
+            "type": "string"
+          }
+        }
+      },
+      "PermitDetailEventOpenPerson": {
+        "description": "Dane osoby",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "full_name": {
+            "description": "Imię",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "company": {
+            "description": "Firma",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "email": {
+            "description": "E-mail",
+            "type": "string"
+          },
+          "marketing": {
+            "description": "Marketing",
+            "type": "boolean"
+          },
+          "permit": {
+            "$ref": "#/components/schemas/Permit"
+          }
+        }
+      },
+      "PermitList": {
+        "description": "Lista przepustek",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Permit"
+        }
+      },
+      "PermitToCloseList": {
+        "description": "Lista przepustek do zamknięcia",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Permit"
+        }
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator osoby",
+            "type": "integer"
+          },
+          "first_name": {
+            "description": "Imię",
+            "type": "string"
+          },
+          "last_name": {
+            "description": "Nazwisko",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "company": {
+            "description": "Firma",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "email": {
+            "description": "E-mail",
+            "type": "string"
+          },
+          "cards": {
+            "description": "Lista kart",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardList"
+            }
+          }
+        }
+      },
+      "PersonList": {
+        "description": "Lista osób",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Person"
+        }
+      },
+      "ParkingList": {
+        "description": "Lista parkingów",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Parking"
+        }
+      },
+      "ParkingDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator parkingu",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Nazwa parkingu",
+            "type": "string"
+          },
+          "internal": {
+            "description": "Parking wewnętrzny",
+            "type": "boolean"
+          },
+          "settlement_required": {
+            "description": "Wyjazd wymaga rozliczenia",
+            "type": "boolean"
+          },
+          "entries": {
+            "$ref": "#/components/schemas/ParkingEntriesList"
+          },
+          "leaves": {
+            "$ref": "#/components/schemas/ParkingLeavsList"
+          },
+          "passes": {
+            "$ref": "#/components/schemas/ParkingPassesList"
+          }
+        }
+      },
+      "Parking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator parkingu",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Nazwa parkingu",
+            "type": "string"
+          },
+          "internal": {
+            "description": "Parking wewnętrzny",
+            "type": "boolean"
+          },
+          "settlement_required": {
+            "description": "Wyjazd wymaga rozliczenia",
+            "type": "boolean"
+          },
+          "entries": {
+            "$ref": "#/components/schemas/ParkingEntriesList"
+          },
+          "leaves": {
+            "$ref": "#/components/schemas/ParkingLeavsList"
+          },
+          "passes": {
+            "$ref": "#/components/schemas/ParkingPassesList"
+          }
+        }
+      },
+      "ParkingEntriesList": {
+        "description": "Lista wjazdów",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ParkingEntry"
+        }
+      },
+      "ParkingEntry": {
+        "description": "Wjazd",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          },
+          "camera": {
+            "description": "Kamera wjazdowa",
+            "$ref": "#/components/schemas/Camera"
+          }
+        }
+      },
+      "ParkingLeavsList": {
+        "description": "Lista wyjazdów",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ParkingLeave"
+        }
+      },
+      "ParkingLeave": {
+        "description": "Wyjazd",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          },
+          "camera": {
+            "description": "Kamera wyjazdowa",
+            "$ref": "#/components/schemas/Camera"
+          }
+        }
+      },
+      "ParkingPassesList": {
+        "description": "Lista awizacji",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ParkingPasse"
+        }
+      },
+      "ParkingPasse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          },
+          "direction": {
+            "description": "Kierunek",
+            "type": "string",
+            "enum": [
+              "in",
+              "out"
+            ]
+          }
+        }
+      },
+      "PasseList": {
+        "description": "Lista awizacji",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PasseItem"
+        }
+      },
+      "PasseItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator awizacji",
+            "type": "integer"
+          },
+          "confirm": {
+            "description": "Potwierdzenie awizacji",
+            "type": "boolean"
+          },
+          "registration_number": {
+            "description": "Numer rejestracyjny pojazdu",
+            "type": "string"
+          },
+          "trailer_number": {
+            "description": "Numer naczepy pojazdu",
+            "type": "string"
+          },
+          "type": {
+            "description": "Rodzaj awizacji",
+            "type": "string"
+          },
+          "type_loading": {
+            "description": "Rodzaj awizacji dostaw",
+            "type": "string"
+          },
+          "persons": {
+            "$ref": "#/components/schemas/PasseItemPersonList"
+          },
+          "products": {
+            "$ref": "#/components/schemas/PasseItemProductList"
+          },
+          "persons_quantity": {
+            "description": "Ilość produktów",
+            "type": "integer"
+          },
+          "qrcode": {
+            "description": "Kod QR",
+            "type": "string"
+          },
+          "company": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "date_start": {
+            "description": "Data rozpoczęcia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date_end": {
+            "description": "Data zakończenia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "PasseItemPersonList": {
+        "description": "Lista osób",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PasseItemPerson"
+        }
+      },
+      "PasseItemPerson": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "full_name": {
+            "description": "Imię i nazwisko",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "email": {
+            "description": "Adres e-mail",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "marketing": {
+            "description": "Zgoda marketingowa",
+            "type": "boolean"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          }
+        }
+      },
+      "PasseItemProductList": {
+        "description": "Lista produktów",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PasseItemProduct"
+        }
+      },
+      "PasseItemProduct": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikatore",
+            "type": "string"
+          },
+          "name": {
+            "description": "Nazwa",
+            "type": "string"
+          },
+          "amount": {
+            "description": "Cena",
+            "type": "string"
+          },
+          "currency": {
+            "description": "Waluta",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Ilość",
+            "type": "integer"
+          }
+        }
+      },
+      "PasseProductAdd": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Nazwa produktu",
+            "type": "string"
+          },
+          "amount": {
+            "description": "Wartość produktu",
+            "type": "string"
+          },
+          "currency": {
+            "description": "Waluta",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Ilość",
+            "type": "integer"
+          }
+        }
+      },
+      "PurposeVisit": {
+        "description": "Cel wizyty",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          }
+        }
+      },
+      "PurposeVisitList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PurposeVisit"
+        }
+      },
+      "Product": {
+        "description": "Produkt",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "name": "Nazwa",
+            "type": "string"
+          }
+        }
+      },
+      "Source": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "identifier": {
+            "description": "Identyfikator źródła ustawiany przez użytkownika",
+            "type": "string"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          },
+          "system": {
+            "description": "Rodzaj źródła",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "Identyfikator",
+                "type": "string"
+              },
+              "description": {
+                "description": "Opis",
+                "type": "string"
+              },
+              "service": {
+                "description": "Czy jest to mikroserwis",
+                "type": "boolean"
+              },
+              "device": {
+                "description": "Czy jest to urządzenie",
+                "type": "boolean"
+              }
+            }
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/SourceParameterList"
+          },
+          "modbus": {
+            "$ref": "#/components/schemas/SourceModbus"
+          }
+        }
+      },
+      "SourceParameterList": {
+        "description": "Lista parametrów źródła",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SourceParameter"
+        }
+      },
+      "SourceParameter": {
+        "description": "Parametr źródła",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "key_name": {
+            "description": "Klucz",
+            "type": "string"
+          },
+          "value": {
+            "description": "Wartość",
+            "type": "string"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          }
+        }
+      },
+      "SourceModbus": {
+        "description": "Modbus",
+        "type": "object",
+        "properties": {
+          "ip": {
+            "description": "Adres IP",
+            "type": "string"
+          },
+          "port": {
+            "description": "Numer portu",
+            "type": "integer"
+          },
+          "network": {
+            "description": "Numer sieci",
+            "type": "integer"
+          }
+        }
+      },
+      "EvntShowCompany": {
+        "description": "Dane najemcy",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Nazwa",
+            "type": "string"
+          }
+        }
+      },
+      "Company": {
+        "description": "Dane najemcy",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Nazwa",
+            "type": "string"
+          },
+          "sort": {
+            "description": "Numer określający kolejność",
+            "type": "integer"
+          },
+          "employees": {
+            "$ref": "#/components/schemas/EmployeesList"
+          },
+          "company_purpose_visit": {
+            "description": "Lista powodów wizyty",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyPurposeVisit"
+            }
+          }
+        }
+      },
+      "EmployeesList": {
+        "description": "Lista pracowników",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Employee"
+        }
+      },
+      "Employee": {
+        "description": "Dane pracownika",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "first_name": {
+            "description": "Imię",
+            "type": "string"
+          },
+          "last_name": {
+            "description": "Nazwisko",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "company": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Telefon",
+            "type": "string"
+          },
+          "email": {
+            "description": "E-mail",
+            "type": "string"
+          },
+          "send_email": {
+            "description": "powiadom o przyjeździe gościa",
+            "type": "boolean"
+          },
+          "send_email_all_in": {
+            "description": "powiadom o przyjeździe każdego gościa",
+            "type": "boolean"
+          },
+          "send_email_all_out": {
+            "description": "powiadom o wyjeździe każdego gościa",
+            "type": "boolean"
+          },
+          "send_verify_email": {
+            "description": "powiadom o nieprawidłowym postoju",
+            "type": "boolean"
+          }
+        }
+      },
+      "CompanyList": {
+        "description": "Lista najemców",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Company"
+        }
+      },
+      "CompanyDetail": {
+        "description": "Szczeguły najemcy",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Nazwa",
+            "type": "string"
+          },
+          "sort": {
+            "description": "Numer kolejności sortowania",
+            "type": "integer"
+          },
+          "company_purpose_visit": {
+            "description": "Lista powodów wizyty",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyPurposeVisit"
+            }
+          }
+        }
+      },
+      "CompanyPurposeVisit": {
+        "description": "Powody wizyty",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "purpose_visit": {
+            "$ref": "#/components/schemas/PurposeVisit"
+          },
+          "products": {
+            "description": "Lista produktów",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompanyProductList"
+            }
+          }
+        }
+      },
+      "CompanyProductList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Product"
+        }
+      },
+      "PermitActivePersonList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PermitActivePerson"
+        }
+      },
+      "PermitActivePerson": {
+        "description": "Lista osób",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "passe_item_person_id": {
+            "description": "Identyfikator pozycji osoby w pozycji awizacji",
+            "type": "integer"
+          },
+          "full_name": {
+            "description": "Imię i nazwisko",
+            "type": "string"
+          },
+          "company_name": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "email": {
+            "description": "Adres e-mail",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu tożsamości",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "purpose_visit": {
+            "$ref": "#/components/schemas/PurposeVisit"
+          },
+          "contractor": {
+            "$ref": "#/components/schemas/Contractor"
+          },
+          "permit": {
+            "$ref": "#/components/schemas/Permit"
+          }
+        }
+      },
+      "Contractor": {
+        "description": "Kontrahent",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Nazwa",
+            "type": "string"
+          }
+        }
+      },
+      "PermitPerson": {
+        "descritpion": "Osoba",
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "description": "Imię i nazwisko",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "company": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "email": {
+            "description": "Adres e-mail",
+            "type": "string"
+          },
+          "marketing": {
+            "description": "Zgody marketingowe",
+            "type": "boolean"
+          }
+        }
+      },
+      "PermitProduct": {
+        "descritpion": "Produkt",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Nazwa produktu",
+            "type": "string"
+          },
+          "quantity": {
+            "description": "Ilość",
+            "type": "string"
+          }
+        }
+      },
+      "PurposeVisitDetail": {
+        "descritpion": "Cel wizyty",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          }
+        }
+      },
+      "Camera": {
+        "descritpion": "kamera",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Opis",
+            "type": "string"
+          }
+        }
+      },
+      "EventWalkingPersonList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EventWalkingPerson"
+        }
+      },
+      "EventWalkingPerson": {
+        "descritpion": "Osoba",
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "description": "Imię i nazwisko",
+            "type": "string"
+          },
+          "id_number": {
+            "description": "Numer dokumentu",
+            "type": "string"
+          },
+          "company": {
+            "description": "Nazwa firmy",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Numer telefonu",
+            "type": "string"
+          },
+          "pesel": {
+            "description": "PESEL",
+            "type": "string"
+          },
+          "email": {
+            "description": "Adres e-mail",
+            "type": "string"
+          },
+          "marketing": {
+            "description": "Zgody marketingowe",
+            "type": "boolean"
+          }
+        }
+      },
+      "EventVerify": {
+        "descritpion": "Zdarzenie",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "string"
+          },
+          "registration_number": {
+            "description": "Numer rejestracyjny",
+            "type": "string"
+          },
+          "time_of": {
+            "description": "Data i godzina zdarzenia",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status zdarzenia",
+            "type": "string"
+          },
+          "image": {
+            "description": "Adres dużego zdjęcia",
+            "type": "string"
+          },
+          "image_thumbnail": {
+            "description": "Adres małego zdjęcia",
+            "type": "string"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "permit": {
+            "$ref": "#/components/schemas/EventVerifyPermit"
+          },
+          "passe_item": {
+            "$ref": "#/components/schemas/EventVerifyPasseItem"
+          }
+        }
+      },
+      "EventVerifyPermit": {
+        "descritpion": "Przepustka",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "full_number": {
+            "description": "Numer przepustki",
+            "type": "string"
+          },
+          "create_at": {
+            "description": "Data utworzenia",
+            "type": "string"
+          },
+          "active": {
+            "description": "Aktywna",
+            "type": "boolean"
+          },
+          "close_at": {
+            "description": "Data zamknięcia",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "comapny": {
+            "$ref": "#/components/schemas/Company"
+          }
+        }
+      },
+      "EventVerifyPasseItem": {
+        "descritpion": "Awizacja",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "date_access": {
+            "description": "Data rozpoczęcia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date_access_end": {
+            "description": "Data zakończenia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "valid_from": {
+            "description": "Godzina rozpoczęcia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "valid_to": {
+            "description": "Godzina zakończenia awizacji",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "comapny": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "parkings": {
+            "$ref": "#/components/schemas/EventVerifyPasseItemParkingList"
+          }
+        }
+      },
+      "EventVerifyPasseItemParkingList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EventVerifyPasseItemParking"
+        }
+      },
+      "EventVerifyPasseItemParking": {
+        "descritpion": "Awizacja",
+        "type": [
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "description": "Identyfikator",
+            "type": "integer"
+          },
+          "description": {
+            "description": "Opis",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
